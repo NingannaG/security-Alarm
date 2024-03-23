@@ -16,69 +16,104 @@ function generateTowerData() {
   };
 }
 
-function updateTowersList(towerData) {
-  if (towersList.has(towerData.tower)) {
-    const oldTowerData = towersList.get(towerData.tower);
-    if (oldTowerData.powerSource !== towerData.powerSource) {
-      towersList.set(towerData.tower, {
-        lastUpdatedTime: towerData.time,
-        powerSource: towerData.powerSource,
-      });
-    }
-  } else {
-    towersList.set(towerData.tower, {
-      lastUpdatedTime: towerData.time,
-      powerSource: towerData.powerSource,
-    });
+function updateTowersListCache(towerData) {
+  const { tower, powerSource, time } = towerData;
+  const existingTower = towersList.get(tower);
+
+  if (!existingTower || existingTower.powerSource !== powerSource) {
+    towersList.set(tower, { lastUpdatedTime: time, powerSource });
   }
 }
 
-function findAnomalies(data) {
-  const { temperature, fuelStatus, powerSource, time } = data;
+function findThirdAnomaly() {
   const currentTime = new Date().getTime();
-  const timeDifference = (currentTime - time) / (1000 * 60 * 60); // Convert time difference to hours
-
-  let anomaly = false;
-  let type = [];
-
-  if (temperature > 45) {
-    anomaly = true;
-    type.push(1);
+  const list = [];
+  for (let [key, value] of towersList) {
+    const time = value.lastUpdatedTime;
+    const timeDifference = (currentTime - time) / (1000 * 60 * 60); // Convert time difference to hours
+    if (timeDifference >= 2) {
+      list.push(key);
+    }
   }
+  return list;
+}
 
-  if (fuelStatus < 20) {
-    anomaly = true;
-    type.push(2);
-  }
+function findAnomalies(data, isThirdAnomaly) {
+  const { temperature, fuelStatus } = data;
+  const type = [];
 
-  //   if (powerSource === "DG" && timeDifference >= 2) {
-  //     anomaly = true;
-  //     type.push(3);
-  //   }
+  if (temperature > 45) type.push(1);
+  if (fuelStatus < 20) type.push(2);
+  if (isThirdAnomaly) type.push(3);
 
-  data.anomaly = anomaly;
-  data.type = type;
-  return data;
+  return { ...data, anomaly: type.length > 0, type };
 }
 
 async function pushDataToMongoDB(towerData) {
   try {
     // Create a new Tower document
     const newTower = new Tower(towerData);
-    updateTowersList(towerData);
+    updateTowersListCache(towerData);
     // Save the new Tower document to the specified collection for that tower
     const savedTower = await newTower.save();
-    console.log("Tower data saved to MongoDB:");
+    console.log("Tower data saved to MongoDB");
   } catch (error) {
     console.error("Error pushing data to MongoDB:", error);
   }
 }
 
+async function updateDataToMongoDB(towerNumber) {
+  try {
+    const maxTimeTowerDoc = await Tower.findOne({ tower: towerNumber })
+      .sort("-time")
+      .exec();
+
+    if (!maxTimeTowerDoc) {
+      console.log("No document found for the specified tower.");
+      return;
+    }
+
+    maxTimeTowerDoc.anomaly = true;
+    maxTimeTowerDoc.type.push(3);
+    await maxTimeTowerDoc.save();
+    console.log("Tower data updated to MongoDB");
+  } catch (error) {
+    console.error("Error updating document:", error);
+  }
+}
+
+async function updateAllTowers(towersListToUpdate) {
+  const updatePromise = towersListToUpdate.map((tower) =>
+    updateDataToMongoDB(tower)
+  );
+  await Promise.all(updatePromise);
+}
+
 exports.getRandomTower = function () {
   const randomIndex = Math.floor(Math.random() * towers.length);
-  let selectedTower = towers[randomIndex];
-  selectedTower = { ...selectedTower, ...generateTowerData() };
-  const selectedTowerWithAnomalies = findAnomalies(selectedTower);
+  const selectedTower = { ...towers[randomIndex], ...generateTowerData() };
+  const towersListWithThirdAnomaly = findThirdAnomaly();
 
+  // Check if the selected tower is not in the list of towers with the third anomaly
+  if (!towersListWithThirdAnomaly.includes(selectedTower.tower)) {
+    // Update all towers if there are towers with the third anomaly
+    if (towersListWithThirdAnomaly.length > 0) {
+      updateAllTowers(towersListWithThirdAnomaly);
+    }
+  }
+
+  // Check if the tower has the third anomaly based on power source and other conditions
+  const hasThirdAnomaly =
+    towersListWithThirdAnomaly.includes(selectedTower.tower) &&
+    selectedTower.powerSource ===
+      towersList.get(selectedTower.tower).powerSource;
+
+  // Generate tower data with anomalies based on conditions
+  const selectedTowerWithAnomalies = findAnomalies(
+    selectedTower,
+    hasThirdAnomaly
+  );
+
+  // Push the tower data with anomalies to MongoDB
   pushDataToMongoDB(selectedTowerWithAnomalies);
 };
