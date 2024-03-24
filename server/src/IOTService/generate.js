@@ -2,7 +2,7 @@ const { towers } = require("../data/towers");
 const Tower = require("../models/tower");
 const towersList = new Map();
 
-function generateTowerData() {
+function generateRandomTowerData() {
   const temperature = Math.floor(Math.random() * 50) + 1;
   const powerSource = Math.random() < 0.5 ? "DG" : "Electric";
   const fuelStatus = Math.floor(Math.random() * 50) + 1;
@@ -27,15 +27,15 @@ function updateTowersListCache(towerData) {
 
 function findThirdAnomaly() {
   const currentTime = new Date().getTime();
-  const list = [];
+  const thirdAnomalyTowers = [];
   for (let [key, value] of towersList) {
     const time = value.lastUpdatedTime;
     const timeDifference = (currentTime - time) / (1000 * 60 * 60); // Convert time difference to hours
     if (timeDifference >= 2) {
-      list.push(key);
+      thirdAnomalyTowers.push(key);
     }
   }
-  return list;
+  return thirdAnomalyTowers;
 }
 
 function findAnomalies(data, isThirdAnomaly) {
@@ -92,16 +92,23 @@ async function updateDataToMongoDB(towerNumber) {
   }
 }
 
-async function updateAllTowers(towersListToUpdate) {
-  const updatePromise = towersListToUpdate.map((tower) =>
-    updateDataToMongoDB(tower)
-  );
-  await Promise.all(updatePromise);
+async function updateAllTowers(towersToUpdate) {
+  try {
+    const updatePromises = towersToUpdate.map((tower) =>
+      updateDataToMongoDB(tower)
+    );
+    await Promise.all(updatePromises);
+  } catch (error) {
+    console.error("Error updating towers:", error);
+  }
 }
 
 exports.getRandomTower = function () {
   const randomIndex = Math.floor(Math.random() * towers.length);
-  const selectedTower = { ...towers[randomIndex], ...generateTowerData() };
+  const selectedTower = {
+    ...towers[randomIndex],
+    ...generateRandomTowerData(),
+  };
   const towersListWithThirdAnomaly = findThirdAnomaly();
 
   // Check if the selected tower is not in the list of towers with the third anomaly

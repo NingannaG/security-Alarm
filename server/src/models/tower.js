@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
 
 const towerSchema = new mongoose.Schema({
-  tower: Number,
+  tower: { type: Number, required: true },
   location: {
-    latitude: Number,
-    longitude: Number,
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
   },
-  temperature: Number,
-  powerSource: String,
-  fuelStatus: Number,
-  time: Number,
-  anomaly: String,
-  type: String,
-  city:String
+  temperature: { type: Number, required: true },
+  powerSource: { type: String, enum: ["DG", "Electric"], required: true },
+  fuelStatus: { type: Number, required: true },
+  time: { type: Number, required: true },
+  anomaly: { type: String, enum: ["true", "false"], required: true },
+  type: { type: String, required: true },
+  city: { type: String, required: true },
 });
 
 const Tower = mongoose.model("Tower", towerSchema);
