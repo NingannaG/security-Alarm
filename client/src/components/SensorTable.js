@@ -1,5 +1,6 @@
 import React from "react";
 import { FaTimes, FaCheck } from "react-icons/fa";
+import styles from "../styles/SensorTable.module.css";
 
 const SensorTable = ({ columns, data }) => {
   const getTypeColor = (type) => {
@@ -20,51 +21,30 @@ const SensorTable = ({ columns, data }) => {
     );
   };
   return (
-    <table
-      style={{
-        borderCollapse: "collapse",
-        width: "75%",
-        border: "1px solid",
-      }}
-    >
-      <thead style={{ backgroundColor: "#f2f2f2" }}>
+    <table className={styles.tableContainer}>
+      <thead className={styles.headerRow}>
         <tr>
           {columns.map((column) => (
-            <th
-              key={column.Header}
-              style={{
-                padding: "8px",
-                borderBottom: "1px solid #ddd",
-                textAlign: "left",
-              }}
-            >
+            <th key={column.Header} className={styles.cell}>
               {column.Header}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {data.map((row) => (
+        {data.map((row, idx) => (
           <tr
-            key={row.id}
+            key={`${row.id}-${idx}`}
+            className={`${styles.cell} ${
+              row.anomaly === "true" ? styles.anomalyTrue : ""
+            }`}
             style={{
-              
-              borderBottom: "1px solid #ddd",
-              padding: "8px",
-              textAlign: "left",
-              color: row.anomaly === "true" ? "white" : "inherit",
               backgroundColor:
                 row.anomaly === "true" ? getTypeColor(row.type) : "inherit",
             }}
           >
             {columns.map((column) => (
-              <td
-                key={`${row.id}-${column.Header}`}
-                style={{
-                  padding: "8px",
-                  textAlign: "left",
-                }}
-              >
+              <td key={`${row.id}-${column.Header}`} className={styles.cell}>
                 {column.accessor === "anomaly"
                   ? getIcon(row.anomaly)
                   : column.accessor === "type" && row.type === "NULL"

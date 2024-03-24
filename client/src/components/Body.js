@@ -6,21 +6,28 @@ import Container from "./Container";
 const Body = () => {
   const [data, setData] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
-  const handleEventData = async (data) => {
-    setData([...data]);
-  };
 
   useEffect(() => {
+    const handleEventData = async (data) => {
+      setData([...data]);
+    };
+
     socket.on("iot-data-updated", handleEventData);
+    
     socket.on("connect", () => {
       setIsConnected(true);
     });
+
     socket.on("disconnect", () => {
       setIsConnected(false);
     });
+
     if (isConnected) socket.emit("join_towerdata");
+
     return () => {
       socket.off("iot-data-updated", handleEventData);
+      socket.off("connect");
+      socket.off("disconnect");
     };
   }, [isConnected]);
 

@@ -1,5 +1,9 @@
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import React, { useCallback, useEffect, useState } from "react";
+import {
+  GREEN_MARKER_ICON_URL,
+  RED_MARKER_ICON_URL,
+} from "../constants/constant";
 
 const containerStyle = {
   width: "99vw",
@@ -11,15 +15,15 @@ const Map = ({ data }) => {
   const [map, setMap] = useState(null);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.GOOGLE_MAP_API,
+    googleMapsApiKey: process.env.GOOGLE_MAP_API || "",
   });
-  const onLoad = useCallback(function callback(map) {
-    map.setZoom(5)
 
+  const onLoad = useCallback((map) => {
+    map.setZoom(5);
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(function callback(map) {
+  const onUnmount = useCallback((map) => {
     setMap(null);
   }, []);
 
@@ -27,6 +31,7 @@ const Map = ({ data }) => {
     lat: 22, // default latitude
     lng: 78, // default longitude
   };
+
   useEffect(() => {
     const markerData = data.map((d) => {
       return {
@@ -42,13 +47,8 @@ const Map = ({ data }) => {
     setMarkersLocation(markerData);
   }, [data]);
 
-  const getMarkerIcon = (anomaly) => {
-    if (anomaly !== "true") {
-      return "https://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Green marker icon URL
-    } else {
-      return "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Red marker icon URL
-    }
-  };
+  const getMarkerIcon = (anomaly) =>
+    anomaly !== "true" ? GREEN_MARKER_ICON_URL : RED_MARKER_ICON_URL;
 
   return isLoaded ? (
     <GoogleMap
@@ -72,7 +72,7 @@ const Map = ({ data }) => {
       <></>
     </GoogleMap>
   ) : (
-    <></>
+    <div>Error: Google Maps API failed to load.</div>
   );
 };
 

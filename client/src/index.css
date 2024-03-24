@@ -1,15 +1,4 @@
-.container{
-    display: flex;
+.container {
+  display: flex;
 }
 
-.info-table{
-    width: 25%;
-    display: flex;
-    justify-items: center;
-    align-items: center;
-    text-align: center;
-}
-
-.topBar{
-    background-color: beige;
-}
