@@ -1,39 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Table from "./Table";
+import { socket } from "../service/socket";
 import Map from "./Map";
+import { COLUMNS_INFO } from "../constants/constant";
 
 const Body = () => {
   const [data, setData] = useState([]);
-  const columns = [
-    { Header: "Tower", accessor: "tower" },
-    { Header: "Temperature (deg C)", accessor: "temperature" },
-    { Header: "Power Source", accessor: "powerSource" },
-    { Header: "Fuel Status(L)", accessor: "fuelStatus" },
-    { Header: "Anomaly", accessor: "anomaly" },
-    { Header: "Anomaly Type", accessor: "type" },
-  ];
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/data");
-      const jsonData = await response.json();
-      setData([...jsonData]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+  const handleEventData = async (data) => {
+    setData([...data]);
   };
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      fetchData();
-    }, 5000);
+    socket.on("iot-data-updated", handleEventData);
+    socket.emit("join_towerdata");
     return () => {
-      clearInterval(timer);
+      socket.off("iot-data-updated", handleEventData);
     };
   }, []);
+
   return (
     <div>
       {/* <Map></Map> */}
-      <Table columns={columns} data={data} />
+      <Table columns={COLUMNS_INFO} data={data} />
     </div>
   );
 };
