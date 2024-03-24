@@ -46,7 +46,11 @@ function findAnomalies(data, isThirdAnomaly) {
   if (fuelStatus < 20) type.push(2);
   if (isThirdAnomaly) type.push(3);
 
-  return { ...data, anomaly: type.length > 0, type };
+  return {
+    ...data,
+    anomaly: type.length > 0 ? "true" : "false",
+    type: type.length>0 ? type.join(", ") : "NULL",
+  };
 }
 
 async function pushDataToMongoDB(towerData) {
