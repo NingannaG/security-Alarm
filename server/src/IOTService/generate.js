@@ -40,16 +40,20 @@ function findThirdAnomaly() {
 
 function findAnomalies(data, isThirdAnomaly) {
   const { temperature, fuelStatus } = data;
-  const type = [];
+  let type = "NULL";
 
-  if (temperature > 45) type.push(1);
-  if (fuelStatus < 20) type.push(2);
-  if (isThirdAnomaly) type.push(3);
+  if (temperature > 45) {
+    type = "1";
+  } else if (fuelStatus < 20) {
+    type = "2";
+  } else if (isThirdAnomaly) {
+    type = "3";
+  }
 
   return {
     ...data,
-    anomaly: type.length > 0 ? "true" : "false",
-    type: type.length>0 ? type.join(", ") : "NULL",
+    anomaly: type !== "NULL" ? "true" : "false",
+    type,
   };
 }
 
@@ -77,9 +81,11 @@ async function updateDataToMongoDB(towerNumber) {
       return;
     }
 
-    maxTimeTowerDoc.anomaly = true;
-    maxTimeTowerDoc.type.push(3);
-    await maxTimeTowerDoc.save();
+    if (maxTimeTowerDoc.type === "NULL") {
+      maxTimeTowerDoc.anomaly = "true";
+      maxTimeTowerDoc.type = "3";
+      await maxTimeTowerDoc.save();
+    }
     console.log("Tower data updated to MongoDB");
   } catch (error) {
     console.error("Error updating document:", error);
