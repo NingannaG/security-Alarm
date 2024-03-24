@@ -12,6 +12,7 @@ const towerSchema = new mongoose.Schema({
   time: Number,
   anomaly: String,
   type: String,
+  city:String
 });
 
 const Tower = mongoose.model("Tower", towerSchema);

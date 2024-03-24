@@ -2,9 +2,9 @@ import Body from "./components/Body";
 
 const App = () => {
   return (
-    <div>
+    <>
       <Body></Body>
-    </div>
+    </>
   );
 };
 

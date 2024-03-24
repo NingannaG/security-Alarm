@@ -2,8 +2,8 @@ import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import React, { useCallback, useEffect, useState } from "react";
 
 const containerStyle = {
-  width: "98vw",
-  height: "70vh",
+  width: "99vw",
+  height: "54vh",
 };
 
 const Map = ({ data }) => {
@@ -11,7 +11,7 @@ const Map = ({ data }) => {
   const [map, setMap] = useState(null);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.GOOGLE_MAP_API,
+    googleMapsApiKey: "AIzaSyDRw20UwWp7YBS8bhSsuvpCffwRQkmIKJo",
   });
   const onLoad = useCallback(function callback(map) {
     // This is just an example of getting and using the map instance!!! don't just blindly copy!
@@ -25,7 +25,6 @@ const Map = ({ data }) => {
     setMap(null);
   }, []);
 
-  // Initialize and add the map
   const center = {
     lat: 22, // default latitude
     lng: 78, // default longitude

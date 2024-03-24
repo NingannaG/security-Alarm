@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Table from "./Table";
 import { socket } from "../service/socket";
 import Map from "./Map";
-import { COLUMNS_INFO } from "../constants/constant";
+import Container from "./Container";
 
 const Body = () => {
   const [data, setData] = useState([]);
@@ -19,10 +18,10 @@ const Body = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <Map data={data}></Map>
-      <Table columns={COLUMNS_INFO} data={data} />
-    </div>
+      <Container data={data}></Container>
+    </>
   );
 };
 
