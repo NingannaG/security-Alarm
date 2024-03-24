@@ -20,7 +20,7 @@ const Body = () => {
 
   return (
     <div>
-      {/* <Map></Map> */}
+      <Map data={data}></Map>
       <Table columns={COLUMNS_INFO} data={data} />
     </div>
   );

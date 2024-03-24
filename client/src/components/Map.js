@@ -1,46 +1,81 @@
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import React, { useMemo } from "react";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import React, { useCallback, useEffect, useState } from "react";
 
-const mapContainerStyle = {
+const containerStyle = {
   width: "98vw",
-  height: "50vh",
+  height: "70vh",
 };
 
-const Map = () => {
-  const { isLoaded, loadError } = useLoadScript({
+const Map = ({ data }) => {
+  const [markersLocation, setMarkersLocation] = useState([]);
+  const [map, setMap] = useState(null);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
     googleMapsApiKey: process.env.GOOGLE_MAP_API,
   });
-  const center = useMemo(
-    () => ({
-      lat: 19.076, // default latitude
-      lng: 72.8777, // default longitude
-    }),
-    []
-  );
+  const onLoad = useCallback(function callback(map) {
+    // This is just an example of getting and using the map instance!!! don't just blindly copy!
+    const bounds = new window.google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
 
-  if (loadError) {
-    return <div>Error loading maps</div>;
-  }
+    setMap(map);
+  }, []);
 
-  if (!isLoaded) {
-    return <div>Loading maps</div>;
-  }
-  return (
-    <div>
-      {" "}
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        zoom={10}
-        center={center}
-      >
+  const onUnmount = useCallback(function callback(map) {
+    setMap(null);
+  }, []);
+
+  // Initialize and add the map
+  const center = {
+    lat: 22, // default latitude
+    lng: 78, // default longitude
+  };
+  useEffect(() => {
+    const markerData = data.map((d) => {
+      return {
+        tower: d.tower,
+        position: {
+          lat: d.location.latitude,
+          lng: d.location.longitude,
+        },
+        anomaly: d.anomaly,
+        type: d.type,
+      };
+    });
+    setMarkersLocation(markerData);
+  }, [data]);
+
+  const getMarkerIcon = (anomaly) => {
+    if (anomaly !== "true") {
+      return "https://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Green marker icon URL
+    } else {
+      return "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Red marker icon URL
+    }
+  };
+
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={5}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      options={{ streetViewControl: false, mapTypeControl: false }}
+    >
+      {markersLocation.map((mark) => (
         <Marker
-          position={{
-            lat: 19.076, // default latitude
-            lng: 72.8777, // default longitude
+          key={mark.tower}
+          position={mark.position}
+          icon={{
+            url: getMarkerIcon(mark.anomaly),
           }}
-        />
-      </GoogleMap>
-    </div>
+          title={mark.type}
+        ></Marker>
+      ))}
+      <></>
+    </GoogleMap>
+  ) : (
+    <></>
   );
 };
 
