@@ -2,6 +2,7 @@ const connectDB = require("./config/database");
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const cron = require("node-cron");
 const { PORT } = require("./constants/constant");
 const { Server } = require("socket.io");
 const { REFRESH_TIME, CLIENT_URL } = require("./constants/constant");
@@ -11,6 +12,7 @@ const { getRandomTower } = require("./IOTService/generate");
 const app = express();
 const httpServer = http.createServer(app);
 app.use(cors());
+let dataTransferJob;
 
 const io = new Server(httpServer, {
   cors: {
@@ -30,14 +32,20 @@ io.on("connection", (socket) => {
       socket.emit("iot-data-updated", data);
 
       // Update data at regular intervals
-      const updateInterval = setInterval(async () => {
-        const newData = await getRealTimeData();
-        socket.emit("iot-data-updated", newData);
-      }, REFRESH_TIME);
+      dataTransferJob = cron.schedule(
+        `*/${REFRESH_TIME} * * * * *`,
+        async () => {
+          const newData = await getRealTimeData();
+          socket.emit("iot-data-updated", newData);
+        }
+      );
+      dataTransferJob.start();
 
-      // Clean up interval on socket disconnect
       socket.on("disconnect", () => {
-        clearInterval(updateInterval);
+        if (dataTransferJob) {
+          dataTransferJob.stop();
+          dataTransferJob = null;
+        }
       });
     } catch (error) {
       console.error("Error updating real-time data:", error);
@@ -45,8 +53,9 @@ io.on("connection", (socket) => {
   });
 });
 
-setInterval(getRandomTower, REFRESH_TIME); // Run getRandomTower function every 5 seconds (5000 milliseconds)
-
+const dataGenerateJob = cron.schedule(`*/${REFRESH_TIME} * * * * *`, () => {
+  getRandomTower();
+});
 
 const startServer = async () => {
   try {
@@ -58,5 +67,5 @@ const startServer = async () => {
     console.error("Error starting server:", error);
   }
 };
-
+dataGenerateJob.start();
 startServer();
