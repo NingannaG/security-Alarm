@@ -15,7 +15,7 @@ const Map = ({ data }) => {
   const [map, setMap] = useState(null);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.GOOGLE_MAP_API || "",
+    googleMapsApiKey: process.env.GOOGLE_MAP_API,
   });
 
   const onLoad = useCallback((map) => {
@@ -72,7 +72,7 @@ const Map = ({ data }) => {
       <></>
     </GoogleMap>
   ) : (
-    <div>Error: Google Maps API failed to load.</div>
+    <></>
   );
 };
 
