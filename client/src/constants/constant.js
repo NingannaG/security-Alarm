@@ -6,6 +6,7 @@ export const COLUMNS_INFO = [
   { Header: "Fuel Status(L)", accessor: "fuelStatus" },
   { Header: "Anomaly", accessor: "anomaly" },
   { Header: "Anomaly Type", accessor: "type" },
+  { Header: "Last Updated Time", accessor: "time" },
 ];
 
 

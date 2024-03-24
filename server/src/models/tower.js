@@ -9,7 +9,7 @@ const towerSchema = new mongoose.Schema({
   temperature: { type: Number, required: true },
   powerSource: { type: String, enum: ["DG", "Electric"], required: true },
   fuelStatus: { type: Number, required: true },
-  time: { type: Number, required: true },
+  time: { type: Date, required: true },
   anomaly: { type: String, enum: ["true", "false"], required: true },
   type: { type: String, required: true },
   city: { type: String, required: true },

@@ -6,7 +6,7 @@ function generateRandomTowerData() {
   const temperature = Math.floor(Math.random() * 50) + 1;
   const powerSource = Math.random() < 0.5 ? "DG" : "Electric";
   const fuelStatus = Math.floor(Math.random() * 50) + 1;
-  const time = new Date().getTime();
+  const time = new Date();
 
   return {
     temperature,
@@ -29,7 +29,7 @@ function findThirdAnomaly() {
   const currentTime = new Date().getTime();
   const thirdAnomalyTowers = [];
   for (let [key, value] of towersList) {
-    const time = value.lastUpdatedTime;
+    const time = value.lastUpdatedTime.getTime();
     const timeDifference = (currentTime - time) / (1000 * 60 * 60); // Convert time difference to hours
     if (timeDifference >= 2) {
       thirdAnomalyTowers.push(key);
@@ -40,7 +40,7 @@ function findThirdAnomaly() {
 
 function findAnomalies(data, isThirdAnomaly) {
   const { temperature, fuelStatus } = data;
-  let type = "NULL";
+  let type = "-";
 
   if (temperature > 45) {
     type = "1";
@@ -52,7 +52,7 @@ function findAnomalies(data, isThirdAnomaly) {
 
   return {
     ...data,
-    anomaly: type !== "NULL" ? "true" : "false",
+    anomaly: type !== "-" ? "true" : "false",
     type,
   };
 }
@@ -81,7 +81,7 @@ async function updateDataToMongoDB(towerNumber) {
       return;
     }
 
-    if (maxTimeTowerDoc.type === "NULL") {
+    if (maxTimeTowerDoc.type === "-") {
       maxTimeTowerDoc.anomaly = "true";
       maxTimeTowerDoc.type = "3";
       await maxTimeTowerDoc.save();

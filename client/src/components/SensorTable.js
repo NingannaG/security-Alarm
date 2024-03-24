@@ -47,7 +47,7 @@ const SensorTable = ({ columns, data }) => {
               <td key={`${row.id}-${column.Header}`} className={styles.cell}>
                 {column.accessor === "anomaly"
                   ? getIcon(row.anomaly)
-                  : column.accessor === "type" && row.type === "NULL"
+                  : column.accessor === "type" && row.type === "-"
                   ? "-"
                   : row[column.accessor]}
               </td>
