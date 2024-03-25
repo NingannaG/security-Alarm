@@ -1,3 +1,7 @@
+exports.REFRESH_TIME = 5; //Seconds
+exports.PORT = process.env.PORT || 6000;
+exports.BACKEND_URL = "http://localhost:5000/";
+exports.UPDATE_PATH = "api/tower";
 exports.towers = [
   {
     tower: 1,

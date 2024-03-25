@@ -1,17 +1,22 @@
-const connectDB = require("./config/database");
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const cron = require("node-cron");
 const { PORT } = require("./constants/constant");
 const { Server } = require("socket.io");
-const { REFRESH_TIME, CLIENT_URL } = require("./constants/constant");
 const { getRealTimeData } = require("./utils/helper");
-const { getRandomTower } = require("./IOTService/generate");
+const towerController = require("./controllers/towerController");
+const connectDB = require("./config/database");
+const { REFRESH_TIME, CLIENT_URL } = require("./constants/constant");
 
 const app = express();
 const httpServer = http.createServer(app);
+
 app.use(cors());
+app.use(express.json());
+
+app.use("/api/tower", towerController);
+
 let dataTransferJob;
 
 const io = new Server(httpServer, {
@@ -53,10 +58,6 @@ io.on("connection", (socket) => {
   });
 });
 
-const dataGenerateJob = cron.schedule(`*/${REFRESH_TIME} * * * * *`, () => {
-  getRandomTower();
-});
-
 const startServer = async () => {
   try {
     await connectDB();
@@ -67,5 +68,4 @@ const startServer = async () => {
     console.error("Error starting server:", error);
   }
 };
-dataGenerateJob.start();
 startServer();

@@ -1,44 +1,40 @@
-const { towers } = require("../data/towers");
-const Tower = require("../models/tower");
 const towersList = new Map();
+const Tower = require("../models/tower");
 
-function generateRandomTowerData() {
-  const temperature = Math.floor(Math.random() * 50) + 1;
-  const powerSource = Math.random() < 0.5 ? "DG" : "Electric";
-  const fuelStatus = Math.floor(Math.random() * 50) + 1;
-  const time = new Date();
-
-  return {
-    temperature,
-    powerSource,
-    fuelStatus,
-    time,
-  };
-}
-
-function updateTowersListCache(towerData) {
-  const { tower, powerSource, time } = towerData;
-  const existingTower = towersList.get(tower);
-
-  if (!existingTower || existingTower.powerSource !== powerSource) {
-    towersList.set(tower, { lastUpdatedTime: time, powerSource });
-  }
-}
-
-function findThirdAnomaly() {
+getThirdAnomalyTowersList = () => {
   const currentTime = new Date().getTime();
   const thirdAnomalyTowers = [];
   for (let [key, value] of towersList) {
-    const time = value.lastUpdatedTime.getTime();
+    const time = new Date(value.lastUpdatedTime).getTime();
     const timeDifference = (currentTime - time) / (1000 * 60 * 60); // Convert time difference to hours
     if (timeDifference >= 2) {
       thirdAnomalyTowers.push(key);
     }
   }
   return thirdAnomalyTowers;
-}
+};
 
-function findAnomalies(data, isThirdAnomaly) {
+updateAllTowers = async (towersToUpdate) => {
+  try {
+    const updatePromises = towersToUpdate.map((tower) =>
+      updateDataToMongoDB(tower)
+    );
+    await Promise.all(updatePromises);
+  } catch (error) {
+    console.error("Error updating towers:", error);
+  }
+};
+
+updateTowersListCache = (towerData) => {
+  const { tower, powerSource, time } = towerData;
+  const existingTower = towersList.get(tower);
+
+  if (!existingTower || existingTower.powerSource !== powerSource) {
+    towersList.set(tower, { lastUpdatedTime: time, powerSource });
+  }
+};
+
+findAnomalies = (data, isThirdAnomaly) => {
   const { temperature, fuelStatus } = data;
   let type = "-";
 
@@ -55,29 +51,29 @@ function findAnomalies(data, isThirdAnomaly) {
     anomaly: type !== "-" ? "true" : "false",
     type,
   };
-}
+};
 
-async function pushDataToMongoDB(towerData) {
+pushDataToMongoDB = async (towerData) => {
   try {
     // Create a new Tower document
     const newTower = new Tower(towerData);
     updateTowersListCache(towerData);
     // Save the new Tower document to the specified collection for that tower
-    const savedTower = await newTower.save();
+    await newTower.save();
     console.log("Tower data saved to MongoDB");
   } catch (error) {
     console.error("Error pushing data to MongoDB:", error);
   }
-}
+};
 
-async function updateDataToMongoDB(towerNumber) {
+updateDataToMongoDB = async (towerNumber) => {
   try {
     const maxTimeTowerDoc = await Tower.findOne({ tower: towerNumber })
       .sort("-time")
       .exec();
 
     if (!maxTimeTowerDoc) {
-      console.log("No document found for the specified tower.");
+      console.log("No document found for the specified tower.", towerNumber);
       return;
     }
 
@@ -90,26 +86,10 @@ async function updateDataToMongoDB(towerNumber) {
   } catch (error) {
     console.error("Error updating document:", error);
   }
-}
+};
 
-async function updateAllTowers(towersToUpdate) {
-  try {
-    const updatePromises = towersToUpdate.map((tower) =>
-      updateDataToMongoDB(tower)
-    );
-    await Promise.all(updatePromises);
-  } catch (error) {
-    console.error("Error updating towers:", error);
-  }
-}
-
-exports.getRandomTower = function () {
-  const randomIndex = Math.floor(Math.random() * towers.length);
-  const selectedTower = {
-    ...towers[randomIndex],
-    ...generateRandomTowerData(),
-  };
-  const towersListWithThirdAnomaly = findThirdAnomaly();
+module.exports.detectAnomalyAndPostData = (selectedTower) => {
+  const towersListWithThirdAnomaly = getThirdAnomalyTowersList();
 
   // Check if the selected tower is not in the list of towers with the third anomaly
   if (!towersListWithThirdAnomaly.includes(selectedTower.tower)) {
