@@ -82,6 +82,11 @@ npm run start-iot-server
 - MongoDB (Atlas)
 - Node-Cron
 - Socket.io
+- Mongoose
+- Axios
+- CORS
+- Nodemon
+- Dotenv
 
 ### Features
 
@@ -119,6 +124,7 @@ Anomalies are introduced in the sensor data generation process:
 ### Technologies Used
 
 - ReactJS
+- Redux Toolkit
 - Socket.io-client
 - Google Maps API
 
