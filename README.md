@@ -3,6 +3,7 @@
 ![Landing Page](./server/src/assets/landing-page.png)
 
 ## Table of Content
+
 - [Overview](#Overview)
 - [Getting Started](#getting-started)
 - [Backend System](#backend-system)
@@ -15,21 +16,58 @@ This project involves building a security alarm system for a mobile tower using 
 
 ## Getting Started
 
-1. Take a `git clone https://github.com/mrr-bajaj/security-alarm-system.git`
-2. Open the cloned repo in IDE (Ex. VS Code) (root as `security-alarm-sytem\`)
-3. Run the command `npm i && npm run install-app` in the terminal
+1. Clone the repository
 
-   It will install all the dependenices of client and server
+```bash
+  git clone https://github.com/mrr-bajaj/security-alarm-system.git
+```
 
-4. Create `.env` file in client and server folder respectively
+2. Open the cloned repository in your preferred IDE (Eg. VS Code) with the root folder as `security-alarm-sytem\`.
 
-   In client's .env file add this `GOOGLE_MAP_API`='YOUR_GOOGLE_API_KEY'
+3. Install dependecies for both client and server:
 
-   In server's .env file add this `MONGODB_URI` = 'MONGODB_ATLAS_URI'
+```bash
+cd security-alarm-sytem
+npm i && npm run install-app
+```
 
-5. Run the command `npm run start-app` from the root(`security-alarm-system\`) of the application in the terminal
+4. Create environment variable files
 
-   It will run the client and server in different terminal
+   - For the client, create a .env file in the client folder with the following content:
+
+   ```makefile
+   GOOGLE_MAP_API=YOUR_GOOGLE_API_KEY
+   ```
+
+   - For the server, create a .env file in the server folder with the following content:
+
+   ```makefile
+   MONGODB_URI=MONGODB_ATLAS_URI
+   ```
+
+5. Start the application:
+
+```bash
+npm run start-app
+```
+
+   This command will start the client and server in separate terminals.
+
+Alternate way to start the application
+
+- To start client
+
+```bash
+cd client
+npm run start
+```
+
+- To start server
+
+```bash
+cd server
+npm run start
+```
 
 ## Backend System
 
@@ -43,7 +81,7 @@ This project involves building a security alarm system for a mobile tower using 
 
 ### Features
 
-#### 1. Random Sensor Data Generation:
+#### 1. Random Sensor Data Generation
 
 The backend system generates sensor data every 5 seconds for random tower with the following parameters:
 
@@ -86,7 +124,6 @@ Anomalies are introduced in the sensor data generation process:
 <!-- - `utils/helper.js`  Contains helper functions -->
 <!-- - `app.js`  Starting point of the server -->
 
-
 ## Frontend System
 
 ### Technologies Used
@@ -99,12 +136,12 @@ Anomalies are introduced in the sensor data generation process:
 
 The frontend displays alarms and sensor data in real-time:
 
-#### Landing Page :
+#### Landing Page
+
 - Uses a Geo Map to show alarms based on anomalies detected in sensor data.
 - Alarms are generated and displayed in real-time on the map.
 - Data table shows all sensor data and refreshes automatically when new sensor data is received
 
-
 ## Contributors
 
-Shubham Bajaj 
+Shubham Bajaj
