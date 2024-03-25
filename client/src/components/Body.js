@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Map from "./Map";
 import Container from "./Container";
-import useSocketConnection from "../hooks/useSocketConnection";
 import Title from "./Title";
 
-const Body = () => {
-  const [data, setData] = useState([]);
-  useSocketConnection(setData);
-
+const Body = ({ data }) => {
   return (
     <div style={{ display: "flex" }}>
       <Title />
