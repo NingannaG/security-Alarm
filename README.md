@@ -58,15 +58,13 @@ Alternate way to start the application
 - To start client
 
 ```bash
-cd client
-npm run start
+npm run start-client
 ```
 
 - To start server
 
 ```bash
-cd server
-npm run start
+npm run start-server
 ```
 
 ## Backend System
