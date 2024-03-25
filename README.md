@@ -1,6 +1,6 @@
 # Security Alarm System for Mobile Tower
 
-![Landing Page](./server/src/assets/landing-page.png)
+![Landing Page](./assets/landing.png)
 
 ## Table of Content
 
@@ -12,7 +12,7 @@
 
 ## Overview
 
-This project involves building a security alarm system for a mobile tower using Node.js, Express, MongoDB,Node-Cron and Socket.io for the backend, and ReactJS,Socket.io-client and Google Maps API for the frontend.The system generates sensor data randomly, and identify anomalies every 5 seconds and store data in MongoDB. The frontend displays alarms in real-time on a map and updates a data table with new sensor data
+This project involves building a security alarm system for a mobile tower using Node.js, Express, MongoDB,Node-Cron and Socket.io for the backend, and ReactJS,Socket.io-client and Google Maps API for the frontend.The IOT service generates sensor data randomly every X seconds, and post this data to backend service which identify anomalies and store data in MongoDB. The frontend displays alarms in real-time on a map and updates a data table with new sensor data
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ This project involves building a security alarm system for a mobile tower using 
 
 ```bash
 cd security-alarm-sytem
-npm i && npm run install-app
+npm run install-app
 ```
 
 4. Create environment variable files
@@ -51,7 +51,7 @@ npm i && npm run install-app
 npm run start-app
 ```
 
-   This command will start the client and server in separate terminals.
+This command will start the client, server and iot-server in separate terminals.
 
 Alternate way to start the application
 
@@ -65,6 +65,12 @@ npm run start-client
 
 ```bash
 npm run start-server
+```
+
+- To start IOT server
+
+```bash
+npm run start-iot-server
 ```
 
 ## Backend System
@@ -81,18 +87,16 @@ npm run start-server
 
 #### 1. Random Sensor Data Generation
 
-The backend system generates sensor data every 5 seconds for random tower with the following parameters:
+The IOT service generates and post sensor data to backend server every X seconds for random tower with the following parameters:
 
 ```
-Tower ID
+Tower Number
 Tower Location (Latitude and Longitude)
 Tower Temperature (in Celsius)
 Power Source (DG/Electric)
 Fuel Status (in liters)
 City
 Time (in Date)
-Anomaly Present (in true/false)
-Anomaly Type (-/1/2/3)
 ```
 
 #### 2. Anomaly Detection
@@ -105,22 +109,10 @@ Anomalies are introduced in the sensor data generation process:
 
 #### 3. Backend Processing
 
-- Use Node-Cron for job scheduling to create and perform anomaly checks every 5 seconds.
-- Store sensor data to MongoDB.
-- Read messages from MongoDB in the backend.
+- Use Node-Cron for job scheduling to create and post data to backend every X seconds.
+- Backend service reads and detect anomaly and post it to Mongodb.
+- Read messages from MongoDB in the backend after every X seconds and sents it to client through Job Scheduling.
 - Establish real-time communication with the frontend using Socket.io for live updates.
-
-<!-- ### Folder Structure -->
-
-<!-- ![Folder structure](./server/src/assets/server-folder-structure.png) -->
-
-<!-- - `config/database.js`  Connection of MongoDB -->
-<!-- - `constants/constants.js`  Constants for the server -->
-<!-- - `data/towers.js`  Raw Tower Data -->
-<!-- - `IOTService/generate.js`  Generate and push random data to DB -->
-<!-- - `models/tower.js`  Schema of tower -->
-<!-- - `utils/helper.js`  Contains helper functions -->
-<!-- - `app.js`  Starting point of the server -->
 
 ## Frontend System
 
@@ -139,6 +131,7 @@ The frontend displays alarms and sensor data in real-time:
 - Uses a Geo Map to show alarms based on anomalies detected in sensor data.
 - Alarms are generated and displayed in real-time on the map.
 - Data table shows all sensor data and refreshes automatically when new sensor data is received
+- When hovering over a marker icon on the map, the corresponding row in the table will be highlighted
 
 ## Contributors
 
