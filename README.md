@@ -1,6 +1,12 @@
 # Security Alarm System for Mobile Tower
 
+Landing Page
+
 ![Landing Page](./assets/landing.png)
+
+Dashboard Page
+
+![Dashboard Page](./assets/dashboard.png)
 
 ## Table of Content
 
@@ -12,7 +18,7 @@
 
 ## Overview
 
-This project involves building a security alarm system for a mobile tower using Node.js, Express, MongoDB,Node-Cron and Socket.io for the backend, and ReactJS,Socket.io-client and Google Maps API for the frontend.The IOT service generates sensor data randomly every X seconds, and post this data to backend service which identify anomalies and store data in MongoDB. The frontend displays alarms in real-time on a map and updates a data table with new sensor data
+This project involves building a security alarm system for a mobile tower using Node.js, Express, MongoDB,Node-Cron and Socket.io for the backend, and ReactJS,Socket.io-client and Google Maps API for the frontend.The IOT service generates sensor data randomly every X seconds, and post this data to backend service which identify anomalies and store data in MongoDB. The frontend displays alarms in real-time on a map,updates a data table with new sensor data and dashboard page which contains temperatue and fuel status line chart of last 20 data and last 5 detected anomalies in table.
 
 ## Getting Started
 
@@ -47,6 +53,8 @@ npm run install-app
 
 5. Start the application:
 
+NOTE:- Make Sure 3000, 5000 and 6000 PORTS are available to use
+
 ```bash
 npm run start-app
 ```
@@ -75,7 +83,7 @@ npm run start-iot-server
 
 ## Backend System
 
-### Technologies Used
+### Technologies/Packages Used
 
 - Node.js
 - Express
@@ -87,6 +95,7 @@ npm run start-iot-server
 - CORS
 - Nodemon
 - Dotenv
+- Concurrently
 
 ### Features
 
@@ -127,6 +136,7 @@ Anomalies are introduced in the sensor data generation process:
 - Redux Toolkit
 - Socket.io-client
 - Google Maps API
+- Chart.js
 
 ### User Interface
 
@@ -138,6 +148,11 @@ The frontend displays alarms and sensor data in real-time:
 - Alarms are generated and displayed in real-time on the map.
 - Data table shows all sensor data and refreshes automatically when new sensor data is received
 - When hovering over a marker icon on the map, the corresponding row in the table will be highlighted
+- On click on any row/marker icon in map will navigate to dashboard page
+- Dashboard page shows tower city, temperature and fuel Status live line chart of last 20 data and last 5 detected anomalies
+
+//TODO
+- Schedule Cron Job for dashboard live data
 
 ## Contributors
 
