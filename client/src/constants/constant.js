@@ -9,8 +9,13 @@ export const COLUMNS_INFO = [
   { Header: "Last Updated Time", accessor: "time" },
 ];
 
-
 export const SERVER_URL = "http://localhost:5000";
 
-export const GREEN_MARKER_ICON_URL = "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
-export const RED_MARKER_ICON_URL = "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
+export const GREEN_MARKER_ICON_URL =
+  "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
+export const RED_MARKER_ICON_URL =
+  "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
+export const PINK_MARKER_ICON_URL =
+  "https://maps.google.com/mapfiles/ms/icons/pink-dot.png";
+export const ORANGE_MARKER_ICON_URL =
+  "https://maps.google.com/mapfiles/ms/icons/orange-dot.png";

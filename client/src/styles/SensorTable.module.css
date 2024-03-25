@@ -4,8 +4,9 @@
 
 .tableContainer {
   border-collapse: collapse;
-  width: 75%;
+  width: 100%;
   border: 1px solid;
+  margin: 20px;
 }
 
 .headerRow {
@@ -16,4 +17,21 @@
   padding: 8px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+}
+
+.title {
+  font-family: fantasy;
+  text-align: end;
+  padding: 10px;
+  margin-left: 10px;
+  position: fixed;
+  top: 10px;
+  width: max-content;
+  right: 10px;
+  font-size: 20px;
+  display: block;
+  z-index: 20;
+  background-color: white;
+  border-color: black;
+  border-width: 2px;
 }
