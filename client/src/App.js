@@ -1,11 +1,7 @@
 import Body from "./components/Body";
 
 const App = () => {
-  return (
-    <>
-      <Body></Body>
-    </>
-  );
+  return <Body/>;
 };
 
 export default App;

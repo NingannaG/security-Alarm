@@ -1,4 +1,8 @@
 .container {
   display: flex;
+  width: 50vw;
 }
 
+body {
+  margin: 0;
+}
