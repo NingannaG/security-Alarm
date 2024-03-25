@@ -1,4 +1,4 @@
-export const getLastUpdatedTime = (timeStamp) => {
+export const formatTime = (timeStamp) => {
   const dateObj = new Date(timeStamp);
 
   const hours =
@@ -14,7 +14,7 @@ export const getLastUpdatedTime = (timeStamp) => {
 export const handleEventData = (data, setData) => {
   if (data.length) {
     const updatedData = data.map((d) => {
-      return { ...d, time: getLastUpdatedTime(d.time) };
+      return { ...d, time: formatTime(d.time) };
     });
     setData([...updatedData]);
   }

@@ -9,12 +9,15 @@ import {
   mapInitialZoom,
   GMapsKey,
 } from "../utils/constant";
+import styles from "../styles/InfoTable.module.css";
 import { getMarkerIcon } from "../utils/utilityFunction";
 import InfoTable from "./InfoTable";
+import { useNavigate } from "react-router";
 
 const Map = ({ data }) => {
   const [markersLocation, setMarkersLocation] = useState([]);
   const [, setMap] = useState(null);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const mapRef = useRef();
   const [mapCenter, setMapcenter] = useState(mapDefaultCenter);
@@ -22,7 +25,9 @@ const Map = ({ data }) => {
     id: "google-map-script",
     googleMapsApiKey: GMapsKey,
   });
-
+  const handleMarkerClick = (towerNumber) => {
+    navigate(`/dashboard/${towerNumber}`);
+  };
   const onLoad = useCallback((map) => {
     map.setZoom(mapInitialZoom);
     setMap(map);
@@ -78,6 +83,7 @@ const Map = ({ data }) => {
           icon={{
             url: getMarkerIcon(anomaly, type),
           }}
+          onClick={() => handleMarkerClick(tower)}
           onMouseOut={() => dispatch(setHoveredMarker(-1))}
           onMouseOver={() => dispatch(setHoveredMarker(tower))}
           title={`Tower: ${tower} \nAnomaly: ${
@@ -86,7 +92,7 @@ const Map = ({ data }) => {
         />
       ))}
       <></>
-      <InfoTable />
+      <InfoTable tableStyle={styles.infoTableContainer} />
     </GoogleMap>
   ) : (
     <></>
